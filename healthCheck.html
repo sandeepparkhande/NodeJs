@@ -1,0 +1,65 @@
+<html>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <head>       
+ </head>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ <script>
+     var data;
+     async function getPromise(url){
+         return new Promise( (resolve,reject) =>  {
+            $.ajax({
+                 dataType:"jsonp",
+                 type :"GET",
+                 url : url,
+                 success : function(dataResult){
+                     console.log(dataResult);
+                     resolve(dataResult);
+                 },
+                 error : function(error){
+                     //console.log(error);
+                     //reject(error);
+                     resolve({ "name" : url , "status": error.statusText,"time": new Date()});
+                 }
+             });
+            }
+         );
+     }
+
+     async function callPromise(){
+         url = "/health";
+            /*
+            await Promise.all([getPromise(url),getPromise(url)]).then(
+             function(result){
+                console.log(result); 
+             });
+             */ 
+             var finalResult;
+             await getPromise(url).then(
+                function(result){
+                console.log(result);
+                finalResult=result; 
+             });  
+             $("#table1 tbody").append(
+                 "<tr>"+"<td>"+ finalResult['name']+"</td>"+"<td>"+ finalResult['status']+"</td>"+"<td>"+ finalResult['time']+"</td>"+"</tr>"
+             )     
+           console.log(" Promises completed");
+     }
+     function pageReload(t){
+         setTimeout("location.reload(true)",t)
+         callPromise();
+     }
+ </script>
+    <body onload="javascript:pageReload(30000)">
+        <H3> Health Check URL Health </H3>
+        <input type="button" value=" Rerfesh Page" onclick="callPromise()"/>
+        <table id="table1" class="table"> 
+            <thead>
+                <th> URL </th>
+                <th> Status </th>,
+                <th> Time </th>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </body>
+</html>
